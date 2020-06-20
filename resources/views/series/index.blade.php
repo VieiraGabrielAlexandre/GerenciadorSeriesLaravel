@@ -1,11 +1,12 @@
 @extends('layout')
+
 @section('cabecalho')
-Séries
+    Séries
 @endsection
 
 @section('conteudo')
     @if(!empty($mensagem))
-    <div class="alert alert-sucess">
+    <div class="alert alert-success">
         {{ $mensagem }}
     </div>
     @endif
@@ -13,15 +14,19 @@ Séries
 <ul class="list-group">
     @foreach($series as $serie)
         <li class="list-group-item d-flex justify-content-between align-items-center">{{ $serie->nome }}
-
-        <form method="post" action="/series/remover/{{ $serie->id }}"
-            onsubmit="return confirm('Tem certeza que deseja remover a série {{ addslashes($serie->nome) }}?')">
-            @csrf
-            @method('DELETE')
-            <button class="btn btn-danger btn-sm">
-                <i class="fas fa-trash-alt"></i>
-            </button>
-        </form>
+        <span class="d-flex">
+            <a href="/series/{{ $serie->id }}/temporadas" class="btn btn-info btn-sm mr-1">
+                <i class="fas fa-external-link-alt"></i>
+            </a>
+            <form method="post" action="/series/remover/{{ $serie->id }}"
+                onsubmit="return confirm('Tem certeza que deseja remover a série {{ addslashes($serie->nome) }}?')">
+                @csrf
+                @method('DELETE')
+                <button class="btn btn-danger btn-sm">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </form>
+        </span>
         
         </li>
 
