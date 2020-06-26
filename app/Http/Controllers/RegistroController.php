@@ -23,6 +23,6 @@ class RegistroController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('lista_series');
+        return redirect()->route('listar_series');
     }
 }

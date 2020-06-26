@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SeriesFormRequest;
-use App\{Serie, Temporada, Episodio};
+use Illuminate\Support\Facades\Mail;
+use App\{Serie, Temporada, Episodio, User};
 use App\Services\CriadorDeSerie;
 use App\Services\RemovedorDeSerie;
 use Illuminate\Http\Request;
@@ -33,6 +34,22 @@ class SeriesController extends Controller
             $request->qtd_temporadas,
             $request->ep_por_temporada,
         );
+
+        $users = User::all();
+
+        foreach($users as $key => $user){
+            $multiplicador = $key + 1;
+            $email = new \App\Mail\NovaSerie(
+                $request->nome,
+                $request->qtd_temporadas,
+                $request->ep_por_temporada
+            );
+
+            $email->subject = 'Nova série Adicionada';
+
+            $when = now()->addSecond(10 * $multiplicador);
+            Mail::to($user)->later($when, $email);
+        }
 
         $request->session()
             ->flash(

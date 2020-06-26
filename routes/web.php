@@ -47,3 +47,23 @@ Route::get('/sair', function() {
     \Illuminate\Support\Facades\Auth::logout();
     return redirect('/entrar');
 });
+
+Route::get('/visualizando-email', function() {
+    return new App\Mail\NovaSerie(
+        'Black Mirror',
+        1,
+        10
+    );
+});
+
+Route::get('/enviando-email', function() {
+
+
+    $user = (object)[
+        'email' => 'gabrielvieira@gmail.com',
+        'name' => 'Gabriel'
+    ];
+
+    return 'Email enviado !';
+
+});
