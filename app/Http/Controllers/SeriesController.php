@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SeriesFormRequest;
 use Illuminate\Support\Facades\Mail;
-use App\{Serie, Temporada, Episodio, User};
+use App\{Events\NovaSerie, Serie, Temporada, Episodio, User};
 use App\Services\CriadorDeSerie;
 use App\Services\RemovedorDeSerie;
 use Illuminate\Http\Request;
@@ -28,28 +28,26 @@ class SeriesController extends Controller
 
     public function store(SeriesFormRequest $request, CriadorDeSerie $criadorDeSerie)
     {
+        $capa = null;
+
+        if($request->hasFile('capa')){
+            $capa = $request->file('capa')->store('serie');
+        }
 
         $serie = $criadorDeSerie->criarSerie(
             $request->nome,
             $request->qtd_temporadas,
             $request->ep_por_temporada,
+            $capa
         );
 
-        $users = User::all();
+        $eventoNovaSerie = new NovaSerie(
+            $request->nome,
+            $request->qtdTemporadas,
+            $request->qtdEpisodios
+        );
 
-        foreach($users as $key => $user){
-            $multiplicador = $key + 1;
-            $email = new \App\Mail\NovaSerie(
-                $request->nome,
-                $request->qtd_temporadas,
-                $request->ep_por_temporada
-            );
-
-            $email->subject = 'Nova série Adicionada';
-
-            $when = now()->addSecond(10 * $multiplicador);
-            Mail::to($user)->later($when, $email);
-        }
+        event($eventoNovaSerie);
 
         $request->session()
             ->flash(

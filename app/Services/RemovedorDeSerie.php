@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Services;
-use App\{Serie, Temporada, Episodio};
+use App\{Events\SerieApagada, Serie, Temporada, Episodio};
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class RemovedorDeSerie
 {
@@ -11,10 +12,16 @@ class RemovedorDeSerie
         $nomeSerie = '';
         DB::transaction(function () use ($serieId, &$nomeSerie){
             $serie = Serie::find($serieId);
+            $serieObj = (object) $serie->toArray();
+
             $nomeSerie = $serie->nome;
 
             $this->removerTemporadas($serie);
             $serie->delete();
+
+            $evento = new SerieApagada($serie);
+            event($evento);
+
         });
         return $nomeSerie;
     }

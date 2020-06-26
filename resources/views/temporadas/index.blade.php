@@ -5,6 +5,15 @@
 @endsection
 
 @section('conteudo')
+    @if($serie->capa)
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <a href="{{ $serie->capa_url }}" target="_blank">
+                <img src="{{ $serie->capa_url }}" alt="" class="img-thumbnail" height="400px" width="400px"/>
+            </a>
+        </div>
+    </div>
+    @endif
 
 <ul class="list-group">
     @foreach($temporadas as $temporada)
